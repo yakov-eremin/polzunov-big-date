@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const http = require('http');
 // пока что не работает не разобрался почему, это нужно для автоматического перезапуска сервера после изменения чего либо
-//const nodemon = require('nodemon');
+const nodemon = require('nodemon');
 
 // настройка подключения к БД
 const pool = new Pool({
