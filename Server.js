@@ -3,8 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const http = require('http');
-// пока что не работает не разобрался почему, это нужно для автоматического перезапуска сервера после изменения чего либо
 const nodemon = require('nodemon');
+const WebSocket = require('ws');
+const os = require('os');
 
 // настройка подключения к БД
 const pool = new Pool({
@@ -16,7 +17,27 @@ const pool = new Pool({
 });
 
 const app = express();
+
+// создание и запуск сервера
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ noServer: true });
+
 const port = 3000;
+
+// это для разных типов запросов
+const requestCounters = {
+  GET: 0,
+  POST: 0,
+  PUT: 0,
+  DELETE: 0
+};
+
+// подсчет этих запросов
+app.use((req, res, next) => {
+  requestCounters[req.method]++;
+  next();
+});
+
 
 // это нужно для обработки запросов с телом в формате JSON
 app.use(bodyParser.json());
@@ -39,6 +60,23 @@ app.use('/likes', likes);
 app.use('/messages', messages);
 app.use('/tests', tests);
 
+
+// админ панель
+const admin = require('./modules/admin')(server, app, pool,/*clientCounter, */requestCounters);
+app.use('/admin', admin);
+
+// должно было быть подсчётом подключённых и отключённых клиентов но пока что не работает
+/*wss.on('connection', (ws) => {
+  clientCounter.connected++;
+  ws.on('close', () => clientCounter.disconnected++);
+});*/
+
+
+// запуск сервера
+server.listen(port, () => {
+  console.log('Сервер запущен на порту ' + port);
+});
+
 // это временная штука, нужная для теста подключения к БД
 const testDatabaseConnection = async () => {
     try {
@@ -51,9 +89,10 @@ const testDatabaseConnection = async () => {
   
   testDatabaseConnection();
   
-// создание и запуск сервера
-const server = http.createServer(app);
 
-server.listen(port, () => {
-  console.log('Сервер запущен ');
-});
+
+
+//server.listen(port, () => {
+  //console.log('Сервер запущен ');
+//});
+
