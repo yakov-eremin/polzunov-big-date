@@ -77,17 +77,17 @@ server.listen(port, () => {
   console.log('Сервер запущен на порту ' + port);
 });
 
-// это временная штука, нужная для теста подключения к БД
-const testDatabaseConnection = async () => {
-    try {
-      const res = await pool.query('SELECT NOW()');
-      console.log('Подключено к БД:', res.rows[0].now);
-    } catch (err) {
-      console.error('Ошибка подключения к БД:', err.stack);
-    }
-  };
+// // это временная штука, нужная для теста подключения к БД
+// const testDatabaseConnection = async () => {
+//     try {
+//       const res = await pool.query('SELECT NOW()');
+//       console.log('Подключено к БД:', res.rows[0].now);
+//     } catch (err) {
+//       console.error('Ошибка подключения к БД:', err.stack);
+//     }
+//   };
   
-  testDatabaseConnection();
+//   testDatabaseConnection();
   
 
 
