@@ -5,10 +5,10 @@ module.exports = (pool) => {
   
     // добавление нового пользователя
     router.post('/add', (req, res) => {
-      const { username, email, password } = req.body;
+      const { username, email, password, gender, SN } = req.body;
       pool.query(
-        'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *',
-        [username, email, password],
+        'INSERT INTO users (username, email, password, gender, SN) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [username, email, password, gender, SN],
         (error, results) => {
           if (error) {
             throw error;
@@ -37,26 +37,27 @@ module.exports = (pool) => {
     router.get('/:id', (req, res) => {
       const id = parseInt(req.params.id);
       pool.query(
-        'SELECT * FROM users WHERE id = $1', 
-        [id], 
+        'SELECT * FROM users WHERE id = $1',
+        [id],
         (error, results) => {
-            if (error) {
-              res.status(500).json({ error: error.message });
-            } else if (results.rows.length === 0) {
-              res.status(404).json({ error: 'Пользователь не найден' });
-            } else {
-              res.status(200).json(results.rows[0]);
-            }
-        });
-      });
+          if (error) {
+            res.status(500).json({ error: error.message });
+          } else if (results.rows.length === 0) {
+            res.status(404).json({ error: 'Пользователь не найден' });
+          } else {
+            res.status(200).json(results.rows[0]);
+          }
+        }
+      );
+    });
 
     // обновление данных пользователя
     router.put('/update/:id', (req, res) => {
       const id = parseInt(req.params.id);
-      const { username, email, password } = req.body;
+      const { username, email, password, gender, SN } = req.body;
       pool.query(
-        'UPDATE users SET username = $1, email = $2, password = $3 WHERE id = $4 RETURNING *',
-        [username, email, password, id],
+        'UPDATE users SET username = $1, email = $2, password = $3, gender = $4, SN = $5 WHERE id = $6 RETURNING *',
+        [username, email, password, gender, SN, id],
         (error, results) => {
           if (error) {
             throw error;
