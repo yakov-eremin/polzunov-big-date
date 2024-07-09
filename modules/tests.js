@@ -4,10 +4,10 @@ module.exports = (pool) => {
 
     // добавление нового теста
     router.post('/add', (req, res) => {
-        const { test_number, user_id, answers, results } = req.body;
+        const { user_id, firstresult, secondresult, thirdresult, fourthresult, fifthresult } = req.body;
         pool.query(
-            'INSERT INTO tests (test_number, user_id, answers, results) VALUES ($1, $2, $3, $4) RETURNING *',
-            [test_number, user_id, answers, results],
+            'INSERT INTO tests (user_id, firstresult, secondresult, thirdresult, fourthresult, fifthresult) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [user_id, firstresult, secondresult, thirdresult, fourthresult, fifthresult],
             (error, results) => {
                 if (error) {
                     throw error;
@@ -35,10 +35,10 @@ module.exports = (pool) => {
     // обновление теста
     router.put('/update/:id', (req, res) => {
         const id = parseInt(req.params.id);
-        const { test_number, user_id, answers, results } = req.body;
+        const { user_id, firstresult, secondresult, thirdresult, fourthresult, fifthresult } = req.body;
         pool.query(
-            'UPDATE tests SET test_number = $1, user_id = $2, answers = $3, results = $4 WHERE id = $5 RETURNING *',
-            [test_number, user_id, answers, results, id],
+            'UPDATE tests SET user_id = $1, firstresult = $2, secondresult = $3, thirdresult = $4, fourthresult = $5, fifthresult = $6 WHERE id = $7 RETURNING *',
+            [user_id, firstresult, secondresult, thirdresult, fourthresult, fifthresult, id],
             (error, results) => {
                 if (error) {
                     throw error;
