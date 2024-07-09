@@ -2,13 +2,15 @@ module.exports = (pool) => {
     const express = require('express');
     const router = express.Router();
 
-    // создание таблицы chats
+
+     // создание таблицы chats
     const ensureChatExists = async (user1_id, user2_id) => {
         await pool.query(`CREATE TABLE IF NOT EXISTS chats (
             id SERIAL PRIMARY KEY,
             user1_id INTEGER NOT NULL,
             user2_id INTEGER NOT NULL
         )`);
+
 
         // это для того, чтобы не создавалась ненужная таблица
         const chatExists = await pool.query(
@@ -29,6 +31,7 @@ module.exports = (pool) => {
             return `messages_${username2}_${username1}`;
         }
     };
+
 
     // отправка сообщения
     router.post('/send', async (req, res) => {
