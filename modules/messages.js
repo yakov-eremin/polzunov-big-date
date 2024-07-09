@@ -81,6 +81,7 @@ module.exports = (pool) => {
         const user1_id = parseInt(req.params.user1_id);
         const user2_id = parseInt(req.params.user2_id);
 
+        
         try {
             const { rows: user1Rows } = await pool.query('SELECT username FROM users WHERE id=$1', [user1_id]);
             const { rows: user2Rows } = await pool.query('SELECT username FROM users WHERE id=$1', [user2_id]);
@@ -95,7 +96,7 @@ module.exports = (pool) => {
             const messagesTableName = getMessageTableName(user1Username, user2Username);
             const result = await pool.query(`SELECT * FROM ${messagesTableName}`);
 
-            res.status(200).json({ tag: 'messages', messages: result.rows });
+            res.status(200).json({ tag: 'messages', data: result.rows });
         } catch (error) {
             console.error('Ошибка получения сообщений:', error);
             res.status(500).json({ tag: 'messages', error: 'Ошибка получения сообщений' });
@@ -158,7 +159,7 @@ module.exports = (pool) => {
                 return res.status(404).json({ tag: 'messages', error: "Сообщения не найдены" });
             }
 
-            res.status(200).json({ tag: 'messages', messages: lastMessages });
+            res.status(200).json({ tag: 'messages', data: lastMessages });
         } catch (error) {
             console.error('Ошибка получения последнего сообщения:', error);
             res.status(500).json({ tag: 'messages', error: 'Ошибка получения последнего сообщения' });

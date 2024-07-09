@@ -53,6 +53,7 @@ module.exports = (pool) => {
         post.dislike_count = 0; // временная мера - всегда 0 (пока что нет их))
       }
 
+      res.status(200).json({ tag: 'posts', data: posts });
       res.status(200).json(posts);
     } catch (error) {
       res.status(500).json({ error: error.message });
