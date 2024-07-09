@@ -2,7 +2,7 @@ module.exports = (pool) => {
     const express = require('express');
     const router = express.Router();
 
-    // Запись участников чата.
+    // создание таблицы chats
     const ensureChatExists = async (user1_id, user2_id) => {
         await pool.query(`CREATE TABLE IF NOT EXISTS chats (
             id SERIAL PRIMARY KEY,
@@ -10,7 +10,7 @@ module.exports = (pool) => {
             user2_id INTEGER NOT NULL
         )`);
 
-        // Инверсия имен пользователей.
+        // это для того, чтобы не создавалась ненужная таблица
         const chatExists = await pool.query(
             `SELECT * FROM chats WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)`,
             [user1_id, user2_id]
@@ -21,7 +21,7 @@ module.exports = (pool) => {
         }
     };
 
-    // Получение имени таблицы сообщений с инверсией имен.
+    // получение имени таблицы сообщений с инверсией имен
     const getMessageTableName = (username1, username2) => {
         if (username1 < username2) {
             return `messages_${username1}_${username2}`;
@@ -30,7 +30,7 @@ module.exports = (pool) => {
         }
     };
 
-    // Новый метод для отправки сообщения
+    // отправка сообщения
     router.post('/send', async (req, res) => {
         const { sender_id, receiver_id, content } = req.body;
 
@@ -73,7 +73,7 @@ module.exports = (pool) => {
         }
     });
 
-    // Получение переписки между двумя пользователями
+    // получение всех сообщений двух пользователей
     router.get('/conversation/:user1_id/:user2_id', async (req, res) => {
         const user1_id = parseInt(req.params.user1_id);
         const user2_id = parseInt(req.params.user2_id);
@@ -99,7 +99,7 @@ module.exports = (pool) => {
         }
     });
 
-    // Получение последних сообщений для заданного пользователя
+    // получение последних сообщений для одного пользователя
     router.get('/last-message/:user_id', async (req, res) => {
         const user_id = parseInt(req.params.user_id);
 
