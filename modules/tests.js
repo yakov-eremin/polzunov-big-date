@@ -58,7 +58,7 @@ module.exports = (pool) => {
                 if (error) {
                     throw error;
                 }
-                res.status(200).json(results.rows);
+                res.status(200).json({ tag: 'tests', data: result.rows });
             }
         );
     });

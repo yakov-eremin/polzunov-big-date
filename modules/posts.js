@@ -15,7 +15,10 @@ module.exports = (pool) => {
         res.status(201).json(results.rows[0]);
       }
     );
+
   });
+
+
 
 
   // удаление поста
@@ -54,7 +57,6 @@ module.exports = (pool) => {
       }
 
       res.status(200).json({ tag: 'posts', data: posts });
-      res.status(200).json(posts);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -75,6 +77,10 @@ module.exports = (pool) => {
       }
     );
   });
+
+  
+
+
 
   return router;
 };
