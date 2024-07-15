@@ -29,11 +29,9 @@ Item {
                 anchors.margins: 5
             }
 
-            // Логика для динамической загрузки элементов
             onContentYChanged: {
                 if (contentY + height > contentHeight - 200) {
 
-                    // Здесь можно добавлять дополнительные элементы к модели
                 }
             }
             highlightRangeMode: ListView.StrictlyEnforceRange

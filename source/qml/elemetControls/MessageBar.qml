@@ -22,14 +22,14 @@ Item {
             anchors.fill: parent
             onClicked: {
 
-                /*cityCB.popup.visible = true*/
+
             }
             hoverEnabled: true
             onEntered: {
-                messageBlock.color = "#F0F0F0" // Цвет при наведении
+                messageBlock.color = "#F0F0F0"
             }
             onExited: {
-                messageBlock.color = "#FFFFFF" // Возвращение к исходному цвету
+                messageBlock.color = "#FFFFFF"
             }
         }
 

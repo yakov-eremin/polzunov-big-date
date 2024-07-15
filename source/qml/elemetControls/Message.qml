@@ -6,7 +6,7 @@ Item {
     property string messageText: "This text is very long and should be two linesффффффффффффффффффффффффффффффффффффффффф ффффффффффффффффффффффффффффффф" // Текст сообщения
     property string timeText: "00:00"
     property int maxWidth
-    // Установите максимальную ширину
+
     width: maxWidth
     height: column.height
 
@@ -26,8 +26,8 @@ Item {
 
             Label {
                 id: messageTextItem
-                width: root.maxWidth // Установите ширину равной максимальной ширине
-                wrapMode: Text.WrapAnywhere // Используйте WordWrap для переноса по словам
+                width: root.maxWidth
+                wrapMode: Text.WrapAnywhere
                 text: root.messageText
                 font.pixelSize: 14
                 color: "#000000"
