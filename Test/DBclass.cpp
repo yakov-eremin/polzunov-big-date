@@ -1,68 +1,39 @@
 #include "DBclass.h"
 
 DBclass::DBclass(QObject *parent): QObject{parent}
+    , networkManager(new NetworkManager(this))
 {
+    connect(networkManager, &QNetworkAccessManager::finished, this, &DBclass::onHttpFinished); //ВАЖНО!
+}
 
-}
-//
-void DBclass::connectToDatabase()
-{
-    db=QSqlDatabase::addDatabase("QPSQL");           //тип базы данных
-    db.setHostName(DATABASE_HOSTNAME);               //адрес сервера
-    db.setDatabaseName(DATABASE_NAME);               //название таблицы
-    db.setUserName(DATABASE_USERNAME);               //имя пользователя
-    db.setPassword(DATABASE_PASSWORD);               //пароль пользователя
-    db.setPort(DATABASE_PORT);
-    this->openDataBase();
-}
-//Открытие БД
-bool DBclass::openDataBase()
-{
-    if(db.open())
-    {
-        qDebug() << "Есть подключение";
-        return true;
-    }
-    else
-    {
-         qDebug() << "Нет подключения";
-        return false;
-    }
-}
-//Закрытие БД
-void DBclass::closeDataBase()
-{
-    db.close();
-}
 //Вставление данных в БД
-bool DBclass::insertIntoTable(const QVariantList &data)
+void DBclass::insertIntoTable(const QVariantList &data, int id)
 {
-    QSqlQuery query;
+    QUrl url("http://localhost:3000/tests/add");
+    QNetworkRequest request(url);
 
-    //Формируем вставку в таблицу
-    query.prepare("INSERT INTO \"UserName\" (\"FirstResult\", \"SecondResult\", \"ThirdResult\", \"FourthResult\", \"FifthResult\")"
-                   "VALUES (:FirstScore, :SecondScore, :ThirdScore, :FourthScore, :FifthScore);");
-    query.bindValue(":FirstScore", data[0]);
-    query.bindValue(":SecondScore", data[1]);
-    query.bindValue(":ThirdScore", data[2]);
-    query.bindValue(":FourthScore", data[3]);
-    query.bindValue(":FifthScore", data[4]);
-    //Выполняется вставка методом exec()
-    if(!query.exec())
-    {
-        qDebug() << "Не удалось произвести запрос добавления";
-        qDebug() << query.lastError().text();
-        return false;
-    }
-    else
-    {
-        qDebug() <<"Успешно добавлена новая запись";
-        return true;
-    }
+    // Устанавливаем заголовок Content-Type
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    // Создаем JSON объект с командой и именем пользователя
+    QJsonObject json;
+    json["user_id"] = id;
+    json["firstresult"] = data[0].toInt();
+    json["secondresult"] = data[1].toInt();
+    json["thirdresult"] = data[2].toInt();
+    json["fourthresult"] = data[3].toInt();
+    json["fifthresult"] = data[4].toInt();
+
+    // Отправляем POST запрос
+    NetworkManager *networkManager = new NetworkManager(this);
+    networkManager->post(request, QJsonDocument(json).toJson());
+    qDebug()<<json;
+    qDebug()<<url;
+    flagUserID=1;
 }
 //Подготовка данных для вставки в БД
-bool DBclass::insertIntoTable(const QString &FirstResult, const QString &SecondResult, const QString &ThirdResult,
-                              const QString &FourthResult, const QString &FifthResult)
+void DBclass::insertIntoTable(const QString &FirstResult, const QString &SecondResult, const QString &ThirdResult,
+                              const QString &FourthResult, const QString &FifthResult, int id)
 {
     QVariantList data;
     data.append(FirstResult);
@@ -70,46 +41,36 @@ bool DBclass::insertIntoTable(const QString &FirstResult, const QString &SecondR
     data.append(ThirdResult);
     data.append(FourthResult);
     data.append(FifthResult);
-    if(insertIntoTable(data))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    insertIntoTable(data,id);
 }
 //Обновление данных в БД
-bool DBclass::updateTable(const QVariantList &data, const int id)
+void DBclass::updateTable(const QVariantList &data, const int id)
 {
-    QSqlQuery query;
+    QString urlStr = "http://localhost:3000/tests/update/"+QString::number(id);
+    QUrl url(urlStr);
+    QNetworkRequest request(url);
 
-    //Формируем вставку в таблицу
-    query.prepare( "Update \"UserName\" SET \"FirstResult\"=:FIRST_SCORE, \"SecondResult\"=:SECOND_SCORE,"
-                  " \"ThirdResult\"=:THIRD_SCORE, \"FourthResult\"=:FOURTH_SCORE, \"FifthResult\"=:FIFTH_SCORE WHERE \"User_id\"=:ID;");
-    //Привязываем значения, которые мы пытаемся вставить
-    query.bindValue(":FIRST_SCORE", data[0]);
-    query.bindValue(":SECOND_SCORE", data[1]);
-    query.bindValue(":THIRD_SCORE", data[2]);
-    query.bindValue(":FOURTH_SCORE", data[3]);
-    query.bindValue(":FIFTH_SCORE", data[4]);
-    query.bindValue(":ID", id);
-    query.bindValue(":id", id);
-    //Выполняется вставка методом exec()
-    if(!query.exec())
-    {
-        qDebug() << "Не удалось произвести запрос изменения";
-        qDebug() << query.lastError().text();
-        return false;
-    }
-    else
-    {
-        qDebug() <<"Успешно изменена запись";
-        return true;
-    }
+    // Устанавливаем заголовок Content-Type
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    // Создаем JSON объект с командой и данными теста
+    QJsonObject json;
+    json["user_id"] = id;
+    json["firstresult"] = data[0].toInt();
+    json["secondresult"] = data[1].toInt();
+    json["thirdresult"] = data[2].toInt();
+    json["fourthresult"] = data[3].toInt();
+    json["fifthresult"] = data[4].toInt();
+
+    // Отправляем PUT запрос
+    NetworkManager *networkManager = new NetworkManager(this);
+    networkManager->put(request, QJsonDocument(json).toJson());
+
+    qDebug()<<json;
+    qDebug()<<url;
 }
 //Подготовка данных для обновления БД
-bool DBclass::updateTable(const QString &FirstResult, const QString &SecondResult, const QString &ThirdResult,
+void DBclass::updateTable(const QString &FirstResult, const QString &SecondResult, const QString &ThirdResult,
                           const QString &FourthResult, const QString &FifthResult, int id)
 {
     QVariantList data;
@@ -118,86 +79,119 @@ bool DBclass::updateTable(const QString &FirstResult, const QString &SecondResul
     data.append(ThirdResult);
     data.append(FourthResult);
     data.append(FifthResult);
-    if(updateTable(data,id))
-        return true;
-    else
-        return false;
+    updateTable(data,id);
 }
 //Проверить, есть ли ID в базе данных
-bool DBclass::checkID(int id)
+bool DBclass::checkID()
 {
-    QSqlQuery query;
-    query.prepare("Select count(\"User_id\") from \"UserName\" where \"User_id\"=:id");
-    query.bindValue(":id",id);
-    query.exec();
-    query.first();
-    int check=query.value(0).toInt();
-    if(check > 0)
+
+    if(flagUserID)
     {
         qDebug() << "Существует ID";
-        qDebug() << check;
+        qDebug() << flagUserID;
 
         return true;
     }
     else
     {
         qDebug() << "Не существует ID";
-        qDebug() << check;
+        qDebug() << flagUserID;
         return false;
     }
 }
-//Извлечь первый результат из БД
-int DBclass::get_results1(int id)
+
+void DBclass::get_results(int id)
 {
-    QSqlQuery query;
-    query.prepare("Select \"FirstResult\" from \"UserName\" where \"User_id\"=:id");
-    query.bindValue(":id",id);
-    query.exec();
-    query.first();
-    int score1=query.value(0).toInt();
-    return score1;
+    QString userID = QString::number(id);
+    QString urlStr = "http://localhost:3000/tests/user/" + userID;
+
+    if(tempScore[0]>0)
+    {
+        flagUserID=1;
+    }
+
+    qDebug() << urlStr;
+    QUrl url(urlStr); // Укажите правильный URL вашего сервера
+    QNetworkRequest request(url);
+
+    // Устанавливаем заголовок Content-Type
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    // Создаем JSON объект с командой и именем пользователя
+    QJsonObject json;
+
+    // Отправляем GET запрос
+    networkManager->get(request, QJsonDocument(json).toJson());
+}
+
+void DBclass::onHttpFinished(QNetworkReply *reply)
+{
+    if (reply->error()) {
+        qDebug() << "Error:" << reply->errorString();
+        return;
+    }
+
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+
+    qDebug() << "Received JSON:" << jsonDoc.toJson(QJsonDocument::Indented);
+
+    QJsonObject jsonObj;
+    if (jsonDoc.isObject())
+    {
+        jsonObj = jsonDoc.object();
+    }
+
+
+    if(jsonObj["tag"] == "tests")
+    {
+        QJsonArray jsonArray = jsonObj["data"].toArray();
+        if (jsonArray.size() > 0){
+            on_newDataReceived(jsonArray);
+        }
+    }
+}
+void DBclass::on_newDataReceived(const QJsonArray &jsonArray)
+{
+    qDebug() <<"Получены новые данные";
+    if (jsonArray.isEmpty()){
+        qDebug() << "No data available for reading!";
+        return;
+    }
+    for (int j = 0 ; j< jsonArray.size(); j++)
+    {
+        QJsonObject test = jsonArray.at(j).toObject();
+        tempScore[0] = test["firstresult"].toInt();
+        tempScore[1] = test["secondresult"].toInt();
+        tempScore[2] = test["thirdresult"].toInt();
+        tempScore[3] = test["fourthresult"].toInt();
+        tempScore[4] = test["fifthresult"].toInt();
+    }
+}
+
+//Извлечь первый результат из БД
+int DBclass::get_results1()
+{
+    return tempScore[0];
 }
 //Извлечь второй результат из БД
-int DBclass::get_results2(int id)
+int DBclass::get_results2()
 {
-    QSqlQuery query;
-    query.prepare("Select \"SecondResult\" from \"UserName\" where \"User_id\"=:id");
-    query.bindValue(":id",id);
-    query.exec();
-    query.first();
-    int score2=query.value(0).toInt();
-    return score2;
+    return tempScore[1];
 }
 //Извлечь третий результат из БД
-int DBclass::get_results3(int id)
+int DBclass::get_results3()
 {
-    QSqlQuery query;
-    query.prepare("Select \"ThirdResult\" from \"UserName\" where \"User_id\"=:id");
-    query.bindValue(":id",id);
-    query.exec();
-    query.first();
-    int score3=query.value(0).toInt();
-    return score3;
+
+    return tempScore[2];
 }
 //Извлечь четвёртый результат из БД
-int DBclass::get_results4(int id)
+int DBclass::get_results4()
 {
-    QSqlQuery query;
-    query.prepare("Select \"FourthResult\" from \"UserName\" where \"User_id\"=:id");
-    query.bindValue(":id",id);
-    query.exec();
-    query.first();
-    int score4=query.value(0).toInt();
-    return score4;
+
+    return tempScore[3];
 }
 //Извлечь пятый результат из БД
-int DBclass::get_results5(int id)
+int DBclass::get_results5()
 {
-    QSqlQuery query;
-    query.prepare("Select \"FifthResult\" from \"UserName\" where \"User_id\"=:id");
-    query.bindValue(":id",id);
-    query.exec();
-    query.first();
-    int score5=query.value(0).toInt();
-    return score5;
+    return tempScore[4];
 }

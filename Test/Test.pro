@@ -1,8 +1,9 @@
-QT += quick widgets sql
+QT += quick widgets
 
 SOURCES += \
         DBclass.cpp \
-        main.cpp
+        main.cpp \
+        networkmanager.cpp
 
 resources.files = main.qml 
 resources.prefix = /$${TARGET}
@@ -22,6 +23,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     ConnectToDatabase.h \
     DBclass.h \
+    networkmanager.h \
     sqlQueryModel.h
 
 DISTFILES += \

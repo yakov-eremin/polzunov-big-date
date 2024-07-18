@@ -9,7 +9,6 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     DBclass database;
-    database.connectToDatabase();
     const QUrl url(QStringLiteral("qrc:/Test/main.qml"));
     QObject::connect(
         &engine,
