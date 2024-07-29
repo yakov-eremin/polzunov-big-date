@@ -4,9 +4,12 @@ import QtQuick.Layouts 1.15
 import Qt5Compat.GraphicalEffects
 
 Item {
+    property string nameUser: "Денис Будников"
+    property string lastMessage: "Отлично"
+    property string timeMessage: "00:00"
     id: root
-    required width
-    required height
+    width: parent.width
+    height: 60
     Rectangle {
         id: messageBlock
         width: parent.width
@@ -21,7 +24,6 @@ Item {
             cursorShape: Qt.PointingHandCursor
             anchors.fill: parent
             onClicked: {
-
 
             }
             hoverEnabled: true
@@ -75,7 +77,7 @@ Item {
             anchors.topMargin: 5
             Text {
                 id: usernameL
-                text: "Денис Будников"
+                text: root.nameUser
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 font.pixelSize: 14
@@ -86,7 +88,7 @@ Item {
             }
             Text {
                 id: timeL
-                text: "00:00"
+                text: root.timeMessage
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 font.pixelSize: 10
@@ -109,7 +111,7 @@ Item {
             anchors.topMargin: 2
             Text {
                 id: editProfileL
-                text: "Последнее сообщение"
+                text: root.lastMessage
                 font.family: "Roboto"
                 font.weight: Font.Normal
                 font.pixelSize: 12

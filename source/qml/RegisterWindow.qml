@@ -381,7 +381,7 @@ ApplicationWindow {
                         border.width: 0.5
                         radius: 4
                     }
-                    model: ["C++", "Java", "JavaScript"]
+                    model: ["Барнаул", "Рубцовск", "Бийск"]
 
                     Image {
                         id: comboBoxArrowIcon

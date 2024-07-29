@@ -28,5 +28,6 @@
         <file>source/img/top10Icon.png</file>
         <file>source/img/communicationIcon.png</file>
         <file>source/img/comboBoxArrowIcon.png</file>
+        <file>source/img/sendMessageIcon.svg</file>
     </qresource>
 </RCC>

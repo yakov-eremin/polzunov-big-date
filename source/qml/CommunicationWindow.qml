@@ -13,21 +13,31 @@ Item {
         id: messageBar
         width: parent.width * 0.4
         height: parent.height
-        Flickable {
+
+        ListView {
             anchors.fill: parent
             clip: true
-            contentHeight: column.height
-            Column {
+            highlightRangeMode: ListView.StrictlyEnforceRange
 
-                id: column
-                width: parent.width
-                spacing: 1
-                Repeater {
-                    model: 10
-                    delegate: MessageBar {
-                        width: parent.width
-                        height: 60
-                    }
+            model: ListModel {
+                ListElement {
+
+                    nameUserElem: "Константин Воробьев"
+                    timeTextElem: "00:03"
+                    lastMessageElem: "Отлично"
+                }
+            }
+            delegate: MessageBar {
+                nameUser: nameUserElem
+                timeMessage: timeTextElem
+                lastMessage: lastMessageElem
+            }
+
+            // Логика для динамической загрузки элементов
+            onContentYChanged: {
+                if (contentY + height > contentHeight - 200) {
+
+                    // Здесь можно добавлять дополнительные элементы к модели
                 }
             }
         }
